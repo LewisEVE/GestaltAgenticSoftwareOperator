@@ -8,6 +8,11 @@ From the repository root:
 docker compose -f deployment/docker-compose.yml up --build
 ```
 
+The compose stack expects two local configuration files that are checked into the repo:
+
+- `deployment/prometheus.yml`
+- `deployment/otel-collector-config.yaml`
+
 The local stack includes:
 
 - `gestalt-core` FastAPI runtime

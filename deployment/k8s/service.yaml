@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: gestalt-core
   namespace: gestalt-core
+  labels:
+    app: gestalt-core
 spec:
   selector:
     app: gestalt-core

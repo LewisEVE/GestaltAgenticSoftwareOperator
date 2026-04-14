@@ -159,6 +159,12 @@ Services included:
 - Grafana
 - OpenTelemetry Collector
 
+The Compose stack ships with repository-local config files for Prometheus and the OpenTelemetry
+Collector under `deployment/prometheus.yml` and `deployment/otel-collector-config.yaml`.
+In this cloud environment the Docker CLI is unavailable, so configuration was validated up to the
+file level and the runtime stack could not be smoke-tested with `docker compose up`.
+- OpenTelemetry Collector
+
 See `deployment/README.md` for compose and Kubernetes deployment notes.
 
 ## Observability

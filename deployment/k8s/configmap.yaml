@@ -6,4 +6,5 @@ metadata:
 data:
   GESTALT_APP_NAME: gestalt-core
   GESTALT_CONFIG_PATH: config/gestalt.yaml
+  GESTALT_OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
   GESTALT_OTEL_SERVICE_NAME: gestalt-core

@@ -13,6 +13,7 @@ spec:
       labels:
         app: gestalt-core
     spec:
+      serviceAccountName: gestalt-core
       containers:
         - name: gestalt-core
           image: gestalt-core:1.0.0

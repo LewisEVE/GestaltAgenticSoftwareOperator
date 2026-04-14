@@ -13,5 +13,7 @@
 - [x] Tool registry and concrete tool implementations added
 - [x] Structured logging, retry helpers, and OpenTelemetry bootstrap added
 - [x] Dockerfile, docker-compose stack, and Kubernetes manifests added
+- [x] Prometheus and OpenTelemetry collector configs added for deployment assets
 - [x] README, deployment guide, changelog, and environment example documented
 - [x] Ruff, Pyright, and pytest suite passing locally
+- [ ] Docker Compose configuration validated in an environment with Docker installed

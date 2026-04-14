@@ -66,6 +66,8 @@ services:
     container_name: gestalt-prometheus
     ports:
       - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
 
@@ -83,6 +85,8 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.131.0
     container_name: gestalt-otel
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
     command: ["--config=/etc/otelcol-contrib/config.yaml"]
     ports:
       - "4317:4317"

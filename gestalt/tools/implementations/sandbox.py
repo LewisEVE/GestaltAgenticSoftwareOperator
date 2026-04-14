@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 import asyncio
-import shlex
 from pathlib import Path
-from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from gestalt.protocol import ToolExecutionMode
-from gestalt.tools.base import BaseGestaltTool, ToolDescriptor, ToolExecutionRequest
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class SandboxCommandInput(BaseModel):
     """Input payload for sandbox command execution."""
+
+    model_config = ConfigDict(extra="forbid")
 
     command: str = Field(min_length=1)
     working_directory: str = "."
@@ -24,6 +24,8 @@ class SandboxCommandInput(BaseModel):
 class SandboxCommandOutput(BaseModel):
     """Result payload for sandbox command execution."""
 
+    model_config = ConfigDict(extra="forbid")
+
     stdout: str = ""
     stderr: str = ""
     return_code: int
@@ -32,9 +34,8 @@ class SandboxCommandOutput(BaseModel):
 class SandboxCommandTool(BaseGestaltTool[SandboxCommandInput, SandboxCommandOutput]):
     """Execute an allowlisted shell command in a constrained subprocess."""
 
-    name = "sandbox_command"
     descriptor = ToolDescriptor(
-        name=name,
+        name="sandbox_command",
         description="Execute a constrained shell command for planner-executor workflows.",
         execution_mode=ToolExecutionMode.SANDBOXED,
         timeout_seconds=30,
@@ -43,15 +44,12 @@ class SandboxCommandTool(BaseGestaltTool[SandboxCommandInput, SandboxCommandOutp
     output_model = SandboxCommandOutput
 
     def __init__(self, *, workspace_root: str = "/workspace") -> None:
-        super().__init__()
         self._workspace_root = Path(workspace_root).resolve()
         self._blocked_terms = {"rm -rf /", "shutdown", "reboot", "mkfs", ":(){:|:&};:"}
 
-    async def _arun_impl(
-        self,
-        payload: SandboxCommandInput,
-        request: ToolExecutionRequest,
-    ) -> SandboxCommandOutput:
+    async def arun(self, payload: SandboxCommandInput, context: ToolContext) -> SandboxCommandOutput:
+        """Execute a constrained command and return captured output."""
+
         lowered = payload.command.lower()
         for blocked in self._blocked_terms:
             if blocked in lowered:

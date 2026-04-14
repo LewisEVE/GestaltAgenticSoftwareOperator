@@ -7,8 +7,13 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from gestalt.blackboard import GestaltBlackboard
-from gestalt.protocol import BlackboardMemoryRecord, BlackboardQuery, BlackboardQueryResult
-from gestalt.tools.base import BaseTool, ToolContext, ToolDescriptor
+from gestalt.protocol import (
+    BlackboardMemoryRecord,
+    BlackboardQuery,
+    BlackboardQueryResult,
+    ToolExecutionMode,
+)
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class BlackboardQueryInput(BaseModel):
@@ -45,12 +50,13 @@ class BlackboardWriteOutput(BaseModel):
     record: BlackboardMemoryRecord
 
 
-class BlackboardQueryTool(BaseTool):
+class BlackboardQueryTool(BaseGestaltTool[BlackboardQueryInput, BlackboardQueryOutput]):
     """Read-only blackboard query tool."""
 
     descriptor = ToolDescriptor(
         name="blackboard_query",
         description="Query the shared Gestalt blackboard memory.",
+        execution_mode=ToolExecutionMode.READ_ONLY,
     )
     input_model = BlackboardQueryInput
     output_model = BlackboardQueryOutput
@@ -71,13 +77,13 @@ class BlackboardQueryTool(BaseTool):
         return BlackboardQueryOutput(result=result)
 
 
-class BlackboardWriteTool(BaseTool):
+class BlackboardWriteTool(BaseGestaltTool[BlackboardWriteInput, BlackboardWriteOutput]):
     """Mutating blackboard write tool."""
 
     descriptor = ToolDescriptor(
         name="blackboard_write",
         description="Write a memory record into the shared Gestalt blackboard.",
-        execution_mode="mutating",
+        execution_mode=ToolExecutionMode.MUTATING,
     )
     input_model = BlackboardWriteInput
     output_model = BlackboardWriteOutput

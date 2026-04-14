@@ -5,7 +5,7 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from gestalt.protocol import ToolExecutionMode
-from gestalt.tools.base import BaseTool, ToolContext, ToolDescriptor
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class RedisInspectInput(BaseModel):
@@ -27,7 +27,7 @@ class RedisInspectOutput(BaseModel):
     entries: list[dict[str, str]] = Field(default_factory=list)
 
 
-class RedisStreamInspectTool(BaseTool):
+class RedisStreamInspectTool(BaseGestaltTool[RedisInspectInput, RedisInspectOutput]):
     """Stub-safe Redis stream inspection tool."""
 
     descriptor = ToolDescriptor(

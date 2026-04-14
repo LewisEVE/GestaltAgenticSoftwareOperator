@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, TypeVar
 
-from pydantic import BaseModel
+from gestalt.tools.base import BaseGestaltTool, ToolExecutionRequest
 
-from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolExecutionRequest
+ToolOutputT = TypeVar("ToolOutputT")
 
 
 class ToolPermissionError(PermissionError):
@@ -53,7 +53,7 @@ class ToolRegistry:
         tool_name: str,
         request: ToolExecutionRequest,
         allowlist: Iterable[str],
-    ) -> BaseModel:
+    ) -> Any:
         """Execute a tool only if it appears in the allowlist."""
 
         if tool_name not in set(allowlist):

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-core
+  namespace: gestalt-core
+spec:
+  selector:
+    app: gestalt-core
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

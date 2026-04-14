@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 from gestalt.config import SecurityConfig
 from gestalt.protocol import ToolExecutionMode
-from gestalt.tools.base import BaseTool, ToolContext, ToolDescriptor
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class HttpRequestInput(BaseModel):
@@ -35,7 +35,7 @@ class HttpRequestOutput(BaseModel):
     text: str = ""
 
 
-class HttpRequestTool(BaseTool):
+class HttpRequestTool(BaseGestaltTool[HttpRequestInput, HttpRequestOutput]):
     """Execute allowlisted outbound HTTP requests."""
 
     descriptor = ToolDescriptor(

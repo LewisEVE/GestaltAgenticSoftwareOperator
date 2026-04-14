@@ -124,17 +124,15 @@ See `.env.example` and `config/gestalt.yaml` for the full configuration surface.
 ### Install
 
 ```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]
+python3.12 -m pip install --user --break-system-packages -e .[dev]
 ```
 
 ### Run tests
 
 ```bash
-ruff check .
-pyright
-pytest
+python3 -m ruff check gestalt tests
+python3 -m pyright
+python3 -m pytest
 ```
 
 ### Run locally
@@ -159,6 +157,9 @@ Services included:
 - Neo4j
 - Prometheus
 - Grafana
+- OpenTelemetry Collector
+
+See `deployment/README.md` for compose and Kubernetes deployment notes.
 
 ## Observability
 
@@ -170,13 +171,13 @@ Tracing and metrics use OpenTelemetry and Prometheus-compatible instrumentation.
 
 ## Release checklist
 
-The `CHANGELOG.md` and deployment documentation are part of the 1.0 release package. The release bar is:
+`RELEASE_CHECKLIST.md` captures the 1.0 release gate. The current release bar is:
 
-- passing lint, type-check, and tests
-- successful graph bootstrap
-- working scheduler registration
-- documented `docker compose` startup
-- security audit and stats loops enabled by configuration
+- [x] passing Ruff, Pyright, and pytest
+- [x] successful graph bootstrap and end-to-end cycle execution
+- [x] working scheduler registration
+- [x] documented Docker Compose and Kubernetes deployment
+- [x] security audit and stats loops enabled by configuration
 
 ## License
 

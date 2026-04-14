@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from pydantic import BaseModel
 
 from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor, ToolExecutionRequest
@@ -56,7 +57,7 @@ async def test_registry_rejects_forbidden_tool() -> None:
     registry = ToolRegistry()
     registry.register(DummyTool())
 
-    try:
+    with pytest.raises(ToolPermissionError, match="not allowed"):
         await registry.execute_allowed(
             tool_name="dummy",
             request=ToolExecutionRequest(
@@ -66,7 +67,3 @@ async def test_registry_rejects_forbidden_tool() -> None:
             ),
             allowlist=[],
         )
-    except ToolPermissionError as exc:
-        assert "not allowed" in str(exc)
-    else:  # pragma: no cover - defensive branch
-        raise AssertionError("Expected ToolPermissionError")

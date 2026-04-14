@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable
+from collections.abc import AsyncIterator, Iterable
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from typing import Any
@@ -11,7 +11,12 @@ from uuid import UUID
 
 from neo4j import AsyncDriver, AsyncGraphDatabase
 from sqlalchemy import DateTime, Float, Integer, String, Text, select
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from gestalt.config import BlackboardConfig
@@ -23,6 +28,7 @@ from gestalt.protocol import (
     GestaltAuditReport,
     GestaltCommand,
     GestaltStatsReport,
+    MemoryKind,
     OptimizationProposal,
 )
 from gestalt.utils.logging import get_logger
@@ -232,7 +238,7 @@ class GestaltBlackboard:
         await self._engine.dispose()
 
     @asynccontextmanager
-    async def session(self) -> AsyncSession:
+    async def session(self) -> AsyncIterator[AsyncSession]:
         """Yield an async SQLAlchemy session."""
 
         async with self._sessionmaker() as session:
@@ -263,10 +269,14 @@ class GestaltBlackboard:
         started = datetime.now(UTC)
         async with self.session() as session:
             rows = (
-                await session.execute(
-                    select(MemoryRow).order_by(MemoryRow.created_at.desc()).limit(query.limit * 3),
+                (
+                    await session.execute(
+                        select(MemoryRow).order_by(MemoryRow.created_at.desc()).limit(query.limit * 3),
+                    )
                 )
-            ).scalars().all()
+                .scalars()
+                .all()
+            )
             candidates = [self._memory_from_row(row) for row in rows]
 
         normalized_query = query.query.lower()
@@ -275,11 +285,9 @@ class GestaltBlackboard:
             key=lambda record: self._score_memory(record, normalized_query, query.filters),
             reverse=True,
         )
-        matches = [
-            record
-            for record in scored
-            if self._score_memory(record, normalized_query, query.filters) > 0
-        ][: query.limit]
+        matches = [record for record in scored if self._score_memory(record, normalized_query, query.filters) > 0][
+            : query.limit
+        ]
         relations = []
         if matches:
             relations = await self._graph_store.query_relations(str(matches[0].record_id))
@@ -388,7 +396,10 @@ class GestaltBlackboard:
         async with self.session() as session:
             row = (
                 await session.execute(
-                    select(PromptOverlayRow).where(PromptOverlayRow.target == target).order_by(PromptOverlayRow.created_at.desc()).limit(1),
+                    select(PromptOverlayRow)
+                    .where(PromptOverlayRow.target == target)
+                    .order_by(PromptOverlayRow.created_at.desc())
+                    .limit(1),
                 )
             ).scalar_one_or_none()
         return json.loads(row.overlay_json) if row else {}
@@ -404,21 +415,17 @@ class GestaltBlackboard:
         """Compute blackboard-derived inputs used by the orchestrator."""
 
         async with self.session() as session:
-            stats_count = (
-                await session.execute(select(StatsRow.report_id))
-            ).scalars().all()
+            stats_count = (await session.execute(select(StatsRow.report_id))).scalars().all()
             audit_rows = (
-                await session.execute(select(AuditRow).order_by(AuditRow.created_at.desc()).limit(10))
-            ).scalars().all()
+                (await session.execute(select(AuditRow).order_by(AuditRow.created_at.desc()).limit(10))).scalars().all()
+            )
             command_rows = (
-                await session.execute(select(CommandRow).order_by(CommandRow.created_at.desc()).limit(25))
-            ).scalars().all()
+                (await session.execute(select(CommandRow).order_by(CommandRow.created_at.desc()).limit(25)))
+                .scalars()
+                .all()
+            )
         failed_commands = sum(1 for row in command_rows if row.status == "failed")
-        recent_risk_average = (
-            sum(row.overall_risk_score for row in audit_rows) / len(audit_rows)
-            if audit_rows
-            else 0.0
-        )
+        recent_risk_average = sum(row.overall_risk_score for row in audit_rows) / len(audit_rows) if audit_rows else 0.0
         return {
             "stats_samples": len(stats_count),
             "failed_commands": failed_commands,
@@ -432,7 +439,7 @@ class GestaltBlackboard:
         return BlackboardMemoryRecord(
             record_id=UUID(row.record_id),
             trace_id=UUID(row.trace_id),
-            memory_kind=row.memory_kind,
+            memory_kind=MemoryKind(row.memory_kind),
             title=row.title,
             content=row.content,
             tags=json.loads(row.tags_json or "[]"),

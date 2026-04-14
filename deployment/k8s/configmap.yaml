@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gestalt-core-config
+  namespace: gestalt-core
+data:
+  GESTALT_APP_NAME: gestalt-core
+  GESTALT_CONFIG_PATH: config/gestalt.yaml
+  GESTALT_OTEL_SERVICE_NAME: gestalt-core

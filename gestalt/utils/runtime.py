@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from importlib import import_module
-from urllib.parse import urlparse
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urlparse
 
 if TYPE_CHECKING:
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -22,13 +22,13 @@ if TYPE_CHECKING:
 class GestaltRuntime:
     """Shared runtime dependencies initialized during app startup."""
 
-    settings: "GestaltSettings"
-    blackboard: "GestaltBlackboard"
-    event_bus: "BaseEventBus"
-    tool_registry: "ToolRegistry"
-    model_gateway: "ModelGateway"
-    graph: "CompiledStateGraph | None" = None
-    scheduler: "AsyncIOScheduler | None" = None
+    settings: GestaltSettings
+    blackboard: GestaltBlackboard
+    event_bus: BaseEventBus
+    tool_registry: ToolRegistry
+    model_gateway: ModelGateway
+    graph: CompiledStateGraph | None = None
+    scheduler: AsyncIOScheduler | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -56,4 +56,4 @@ def import_async_postgres_saver() -> type[Any]:
     """Import the async Postgres saver lazily to tolerate missing libpq locally."""
 
     module = import_module("langgraph.checkpoint.postgres.aio")
-    return getattr(module, "AsyncPostgresSaver")
+    return module.AsyncPostgresSaver

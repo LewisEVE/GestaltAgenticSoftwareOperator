@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from typing import TypeVar
 
 from tenacity import (
     AsyncRetrying,
@@ -13,10 +12,8 @@ from tenacity import (
     wait_exponential,
 )
 
-T = TypeVar("T")
 
-
-async def with_retry(
+async def with_retry[T](
     operation: Callable[[], Awaitable[T]],
     *,
     attempts: int = 3,
@@ -36,7 +33,10 @@ async def with_retry(
             with attempt:
                 return await operation()
     except RetryError as exc:  # pragma: no cover - tenacity reraises by default
-        raise exc.last_attempt.exception()
+        last_error = exc.last_attempt.exception()
+        if last_error is None:
+            raise RuntimeError("Retry operation failed without a captured exception.") from exc
+        raise RuntimeError("Retry operation failed after exhausting retries.") from last_error
 
     msg = "retry operation exited without result"
     raise RuntimeError(msg)

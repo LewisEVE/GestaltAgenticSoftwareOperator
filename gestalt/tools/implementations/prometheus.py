@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from gestalt.protocol import ToolExecutionMode
-from gestalt.tools.base import BaseTool, ToolContext, ToolDescriptor
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class PrometheusQueryInput(BaseModel):
@@ -28,7 +28,7 @@ class PrometheusQueryOutput(BaseModel):
     sampled_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
-class PrometheusQueryTool(BaseTool):
+class PrometheusQueryTool(BaseGestaltTool[PrometheusQueryInput, PrometheusQueryOutput]):
     """Very small metrics tool used by monitor, analyzer, and optimizer agents."""
 
     descriptor = ToolDescriptor(

@@ -2,27 +2,31 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+from pydantic import SecretStr
+
 from gestalt.blackboard import GestaltBlackboard
 from gestalt.config import BlackboardConfig
-from gestalt.protocol import BlackboardMemoryRecord, BlackboardQuery, GestaltStatsReport
+from gestalt.protocol import BlackboardMemoryRecord, BlackboardQuery, GestaltStatsReport, MemoryKind
 from gestalt.stats import LoadLevel, PerformanceTier
 
 
-async def test_blackboard_memory_round_trip() -> None:
+async def test_blackboard_memory_round_trip(tmp_path: Path) -> None:
     """The blackboard should persist and query semantic memories."""
 
     config = BlackboardConfig(
-        database_url="sqlite+aiosqlite:///./test-blackboard.db",
+        database_url=f"sqlite+aiosqlite:///{tmp_path / 'blackboard.db'}",
         neo4j_uri="bolt://localhost:7687",
         neo4j_username="neo4j",
-        neo4j_password="secret",
+        neo4j_password=SecretStr("secret"),
         use_sqlite_fallback_for_tests=True,
     )
     blackboard = GestaltBlackboard(config)
     await blackboard.initialize()
     try:
         record = BlackboardMemoryRecord(
-            memory_kind="knowledge",
+            memory_kind=MemoryKind.KNOWLEDGE,
             title="Deployment incident",
             content="Redis stream lag was detected in production.",
             tags=["redis", "incident"],
@@ -37,14 +41,14 @@ async def test_blackboard_memory_round_trip() -> None:
         await blackboard.close()
 
 
-async def test_blackboard_stats_round_trip() -> None:
+async def test_blackboard_stats_round_trip(tmp_path: Path) -> None:
     """The latest stats report should be queryable."""
 
     config = BlackboardConfig(
-        database_url="sqlite+aiosqlite:///./test-stats.db",
+        database_url=f"sqlite+aiosqlite:///{tmp_path / 'stats.db'}",
         neo4j_uri="bolt://localhost:7687",
         neo4j_username="neo4j",
-        neo4j_password="secret",
+        neo4j_password=SecretStr("secret"),
         use_sqlite_fallback_for_tests=True,
     )
     blackboard = GestaltBlackboard(config)

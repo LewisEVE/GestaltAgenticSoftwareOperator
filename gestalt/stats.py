@@ -156,7 +156,7 @@ class GestaltStats(BaseModel):
         self,
         snapshot: MonitorSnapshot,
         thresholds: StatsThresholds | None = None,
-    ) -> "GestaltStats":
+    ) -> GestaltStats:
         thresholds = thresholds or StatsThresholds()
         self.queue_depth = snapshot.queue_depth
         self.active_cycles = snapshot.active_cycles
@@ -196,7 +196,7 @@ class GestaltStats(BaseModel):
 
     def should_trigger_optimizer(
         self,
-        previous: "GestaltStats | None" = None,
+        previous: GestaltStats | None = None,
         *,
         delta_threshold: int = 10,
     ) -> bool:

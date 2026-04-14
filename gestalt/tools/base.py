@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from gestalt.protocol import ToolExecutionMode
-
-InputModelT = TypeVar("InputModelT", bound=BaseModel)
-OutputModelT = TypeVar("OutputModelT", bound=BaseModel)
 
 
 class ToolContext(BaseModel):
@@ -56,7 +53,7 @@ class ToolExecutionRequest(BaseModel):
         )
 
 
-class BaseGestaltTool(ABC, Generic[InputModelT, OutputModelT]):
+class BaseGestaltTool[InputModelT: BaseModel, OutputModelT: BaseModel](ABC):
     """Abstract asynchronous tool contract used throughout Gestalt Core."""
 
     descriptor: ToolDescriptor

@@ -1,0 +1,93 @@
+services:
+  gestalt-core:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    container_name: gestalt-core
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      neo4j:
+        condition: service_started
+    environment:
+      GESTALT_APP_NAME: gestalt-core
+      GESTALT_CONFIG_PATH: config/gestalt.yaml
+      GESTALT_ADMIN_TOKEN: change-me
+      GESTALT_DATABASE_URL: postgresql+asyncpg://gestalt:gestalt@postgres:5432/gestalt
+      GESTALT_NEO4J_URI: bolt://neo4j:7687
+      GESTALT_NEO4J_USERNAME: neo4j
+      GESTALT_NEO4J_PASSWORD: change-me
+      GESTALT_REDIS_URL: redis://redis:6379/0
+      GESTALT_OTEL_SERVICE_NAME: gestalt-core
+      GESTALT_OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: gestalt-postgres
+    environment:
+      POSTGRES_DB: gestalt
+      POSTGRES_USER: gestalt
+      POSTGRES_PASSWORD: gestalt
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestalt -d gestalt"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: gestalt-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+  neo4j:
+    image: neo4j:5.28
+    container_name: gestalt-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/change-me
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    container_name: gestalt-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    container_name: gestalt-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.131.0
+    container_name: gestalt-otel
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    ports:
+      - "4317:4317"
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  grafana_data:

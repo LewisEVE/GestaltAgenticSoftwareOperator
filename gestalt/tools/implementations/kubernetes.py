@@ -6,8 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from gestalt.tools.base import BaseTool, ToolContext, ToolDescriptor
 from gestalt.protocol import ToolExecutionMode
+from gestalt.tools.base import BaseGestaltTool, ToolContext, ToolDescriptor
 
 
 class KubernetesReadInput(BaseModel):
@@ -55,7 +55,7 @@ class KubernetesPatchOutput(BaseModel):
     patch_summary: dict[str, str] = Field(default_factory=dict)
 
 
-class KubernetesReadTool(BaseTool):
+class KubernetesReadTool(BaseGestaltTool[KubernetesReadInput, KubernetesReadOutput]):
     """Read-only kubernetes inspection stub for production wiring."""
 
     descriptor = ToolDescriptor(
@@ -80,7 +80,7 @@ class KubernetesReadTool(BaseTool):
         )
 
 
-class KubernetesPatchTool(BaseTool):
+class KubernetesPatchTool(BaseGestaltTool[KubernetesPatchInput, KubernetesPatchOutput]):
     """Restricted mutating Kubernetes patch stub."""
 
     descriptor = ToolDescriptor(

@@ -13,4 +13,7 @@ All notable changes to this project will be documented in this file.
 - Unified BaseGestaltAgent lifecycle with specialist agent implementations.
 - Redis Streams event bus with orchestrator approval workflow.
 - FastAPI runtime, APScheduler jobs, observability hooks, and deployment assets.
-- Unit and integration test suites covering core runtime behavior.
+- Docker Compose stack, Kubernetes manifests, and deployment runbook.
+- Release checklist documenting the 1.0 ship criteria.
+- Unit and integration test suites covering core runtime behavior, routing, scheduler jobs,
+  event-bus approvals, API endpoints, and end-to-end graph execution.

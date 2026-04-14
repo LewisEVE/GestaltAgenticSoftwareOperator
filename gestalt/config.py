@@ -236,7 +236,7 @@ class GestaltSettings(BaseSettings):
         return "1.0.0"
 
     @model_validator(mode="after")
-    def validate_agents(self) -> "GestaltSettings":
+    def validate_agents(self) -> GestaltSettings:
         required_agents = {
             "orchestrator",
             "monitor",
@@ -327,7 +327,9 @@ def build_settings(config_path: str | Path | None = None) -> GestaltSettings:
                 blackboard_payload.get("database_url_env", "GESTALT_DATABASE_URL"),
                 "sqlite+aiosqlite:///./gestalt.db",
             ),
-            "neo4j_uri": _resolve_env(blackboard_payload.get("neo4j_uri_env", "GESTALT_NEO4J_URI"), "bolt://neo4j:7687"),
+            "neo4j_uri": _resolve_env(
+                blackboard_payload.get("neo4j_uri_env", "GESTALT_NEO4J_URI"), "bolt://neo4j:7687"
+            ),
             "neo4j_username": _resolve_env(
                 blackboard_payload.get("neo4j_username_env", "GESTALT_NEO4J_USERNAME"),
                 "neo4j",
@@ -354,7 +356,9 @@ def build_settings(config_path: str | Path | None = None) -> GestaltSettings:
                 telemetry_payload.get("service_name_env", "GESTALT_OTEL_SERVICE_NAME"),
                 app_payload.get("name", "gestalt-core"),
             ),
-            "exporter_endpoint": os.getenv(telemetry_payload.get("exporter_endpoint_env", "GESTALT_OTEL_EXPORTER_OTLP_ENDPOINT")),
+            "exporter_endpoint": os.getenv(
+                telemetry_payload.get("exporter_endpoint_env", "GESTALT_OTEL_EXPORTER_OTLP_ENDPOINT")
+            ),
         },
         "security": payload.get("security", {}),
         "agents": _build_agent_configs(payload),

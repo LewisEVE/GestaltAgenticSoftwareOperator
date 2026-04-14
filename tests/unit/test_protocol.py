@@ -13,6 +13,7 @@ from gestalt.protocol import (
     EventApproval,
     GestaltCommand,
     GestaltCommandType,
+    GestaltEventType,
     GestaltGraphState,
     SchedulerSource,
 )
@@ -26,7 +27,7 @@ def test_event_approval_requires_future_expiry() -> None:
         EventApproval(
             source_agent="monitor",
             target_agent="optimizer",
-            permitted_event="peer_signal",
+            permitted_event=GestaltEventType.PEER_SIGNAL,
             rationale="Need to coordinate changes.",
             expires_at=datetime.now(UTC) - timedelta(minutes=1),
         )

@@ -350,7 +350,7 @@ class AgentExecutionReport(GestaltBaseModel):
     finished_at: datetime = Field(default_factory=utc_now)
 
     @model_validator(mode="after")
-    def validate_timing(self) -> "AgentExecutionReport":
+    def validate_timing(self) -> AgentExecutionReport:
         if self.finished_at < self.started_at:
             raise ValueError("finished_at must be greater than or equal to started_at")
         return self

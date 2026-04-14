@@ -1,0 +1,114 @@
+app:
+  name: gestalt-core
+  environment: development
+  api_host: 0.0.0.0
+  api_port: 8080
+  admin_token_env: GESTALT_ADMIN_TOKEN
+
+models:
+  enable_mock_llm: true
+  default_alias: mock://gestalt-default
+  routes:
+    low: mock://gestalt-default
+    medium: mock://gestalt-default
+    high: mock://gestalt-high
+    critical: mock://gestalt-critical
+  embedding_alias: mock://embedding
+  temperature: 0.1
+  max_tokens: 3000
+
+blackboard:
+  database_url_env: GESTALT_DATABASE_URL
+  neo4j_uri_env: GESTALT_NEO4J_URI
+  neo4j_username_env: GESTALT_NEO4J_USERNAME
+  neo4j_password_env: GESTALT_NEO4J_PASSWORD
+  vector_dimensions: 24
+  semantic_top_k: 8
+  memory_namespace: gestalt
+  use_sqlite_fallback_for_tests: true
+
+events:
+  backend: redis
+  redis_url_env: GESTALT_REDIS_URL
+  stream_name: gestalt.events
+  consumer_group: gestalt-core
+  approval_ttl_seconds: 600
+  max_stream_length: 10000
+
+scheduler:
+  timezone: UTC
+  monitor_interval_minutes: 5
+  security_audit_interval_hours: 4
+  knowledge_maintenance_minutes: 30
+  optimizer_interval_minutes: 30
+
+stats:
+  latency_thresholds_ms:
+    medium: 800
+    high: 2000
+    critical: 5000
+  error_rate_thresholds:
+    degraded: 0.05
+    critical: 0.15
+  queue_depth_thresholds:
+    low: 5
+    medium: 20
+    high: 50
+    critical: 100
+  cohesion_penalties:
+    audit_finding: 8
+    failed_command: 5
+    blackboard_conflict: 12
+  optimizer_trigger_delta: 10
+
+audit:
+  enabled: true
+  cadence_hours: 4
+  max_open_findings_before_escalation: 5
+  hallucination_score_threshold: 20
+  jailbreak_score_threshold: 15
+  enforce_event_approval: true
+  require_trace_ids: true
+
+tools:
+  monitor:
+    - prometheus_query
+    - blackboard_query
+  analyzer:
+    - blackboard_query
+    - prometheus_query
+    - http_request
+  planner_executor:
+    - sandbox_command
+    - http_request
+    - blackboard_write
+    - kubernetes_read
+    - kubernetes_patch
+  optimizer:
+    - blackboard_query
+    - blackboard_write
+    - prometheus_query
+  knowledge:
+    - blackboard_query
+    - blackboard_write
+  security_audit:
+    - blackboard_query
+    - redis_stream_inspect
+    - prometheus_query
+    - sandbox_command
+
+telemetry:
+  enabled: false
+  service_name_env: GESTALT_OTEL_SERVICE_NAME
+  exporter_endpoint_env: GESTALT_OTEL_EXPORTER_OTLP_ENDPOINT
+  resource_attributes:
+    deployment.environment: development
+    service.namespace: gestalt
+
+security:
+  sandbox_enabled: true
+  sandbox_timeout_seconds: 30
+  outbound_http_allowlist:
+    - https://api.stripe.com
+  kubernetes_allowed_namespaces:
+    - default

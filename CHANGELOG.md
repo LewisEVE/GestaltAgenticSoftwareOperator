@@ -15,5 +15,6 @@ All notable changes to this project will be documented in this file.
 - FastAPI runtime, APScheduler jobs, observability hooks, and deployment assets.
 - Docker Compose stack, Kubernetes manifests, and deployment runbook.
 - Release checklist documenting the 1.0 ship criteria.
+- Open-source launch documentation, GitHub metadata guidance, and community policy files.
 - Unit and integration test suites covering core runtime behavior, routing, scheduler jobs,
   event-bus approvals, API endpoints, and end-to-end graph execution.

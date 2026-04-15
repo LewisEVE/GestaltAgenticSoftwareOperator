@@ -119,6 +119,21 @@ Key groups:
 
 See `.env.example` and `config/gestalt.yaml` for the full configuration surface.
 
+## Open-source release files
+
+The repository now includes the baseline community and release assets expected for
+ a public open-source project:
+
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `SECURITY.md`
+- `SUPPORT.md`
+- `OPEN_SOURCE_LAUNCH.md`
+- `RELEASE_CHECKLIST.md`
+- `.github/ISSUE_TEMPLATE/*`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `.github/REPOSITORY_METADATA.md`
+
 ## Local development
 
 ### Install
@@ -163,7 +178,6 @@ The Compose stack ships with repository-local config files for Prometheus and th
 Collector under `deployment/prometheus.yml` and `deployment/otel-collector-config.yaml`.
 In this cloud environment the Docker CLI is unavailable, so configuration was validated up to the
 file level and the runtime stack could not be smoke-tested with `docker compose up`.
-- OpenTelemetry Collector
 
 See `deployment/README.md` for compose and Kubernetes deployment notes.
 
@@ -174,6 +188,16 @@ See `deployment/README.md` for compose and Kubernetes deployment notes.
 - `GET /metrics`
 
 Tracing and metrics use OpenTelemetry and Prometheus-compatible instrumentation.
+
+## Community and governance
+
+For public repository readiness, review:
+
+- `CONTRIBUTING.md` for contribution workflow
+- `CODE_OF_CONDUCT.md` for community expectations
+- `SECURITY.md` for responsible disclosure
+- `SUPPORT.md` for support routing
+- `OPEN_SOURCE_LAUNCH.md` and `.github/REPOSITORY_METADATA.md` for GitHub description, topics, and launch copy
 
 ## Release checklist
 

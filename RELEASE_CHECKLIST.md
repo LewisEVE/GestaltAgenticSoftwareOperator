@@ -15,5 +15,7 @@
 - [x] Dockerfile, docker-compose stack, and Kubernetes manifests added
 - [x] Prometheus and OpenTelemetry collector configs added for deployment assets
 - [x] README, deployment guide, changelog, and environment example documented
+- [x] Contributing, security, support, and code-of-conduct docs added for open-source release
+- [x] GitHub issue templates, PR template, and repository metadata guidance added
 - [x] Ruff, Pyright, and pytest suite passing locally
 - [ ] Docker Compose configuration validated in an environment with Docker installed

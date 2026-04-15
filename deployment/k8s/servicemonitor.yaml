@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gestalt-core
+  namespace: gestalt-core
+spec:
+  selector:
+    matchLabels:
+      app: gestalt-core
+  namespaceSelector:
+    matchNames:
+      - gestalt-core
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

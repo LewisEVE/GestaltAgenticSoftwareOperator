@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: gestalt-core
+  namespace: gestalt-core
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: gestalt-core

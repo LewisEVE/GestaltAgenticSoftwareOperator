@@ -1,0 +1,19 @@
+# Gestalt Core 1.0 Release Checklist
+
+- [x] Single LangGraph super-graph implemented
+- [x] Central Gestalt Orchestrator implemented as the only routing authority
+- [x] All specialist agents inherit `BaseGestaltAgent`
+- [x] Shared Blackboard implemented with SQL + Neo4j integration points
+- [x] Typed Pydantic v2 protocol layer implemented
+- [x] Stats system implemented with adaptive thresholds and scoring
+- [x] Security Audit Agent implemented with long-form checklist-driven prompt
+- [x] Redis Streams event bus abstraction implemented with approval enforcement
+- [x] FastAPI runtime implemented with cycle, audit, health, metrics, and query endpoints
+- [x] APScheduler jobs registered for monitor, audit, knowledge, and optimizer loops
+- [x] Tool registry and concrete tool implementations added
+- [x] Structured logging, retry helpers, and OpenTelemetry bootstrap added
+- [x] Dockerfile, docker-compose stack, and Kubernetes manifests added
+- [x] Prometheus and OpenTelemetry collector configs added for deployment assets
+- [x] README, deployment guide, changelog, and environment example documented
+- [x] Ruff, Pyright, and pytest suite passing locally
+- [ ] Docker Compose configuration validated in an environment with Docker installed
